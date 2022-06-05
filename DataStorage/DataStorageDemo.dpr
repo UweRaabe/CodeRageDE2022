@@ -1,0 +1,15 @@
+program DataStorageDemo;
+
+uses
+  Vcl.Forms,
+  Main.Frame in 'Main.Frame.pas' {DemoFrame: TFrame},
+  Main.Form in 'Main.Form.pas' {DemoMainForm};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TDemoMainForm, DemoMainForm);
+  Application.Run;
+end.
