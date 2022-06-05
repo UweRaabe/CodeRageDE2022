@@ -22,6 +22,10 @@ implementation
 
 {$R *.dfm}
 
+const
+  cSomeIndex = 'SomeIndex';
+  cSomeText = 'SomeText';
+
 procedure TDemoFrame.InitDefaults;
 begin
   SomeIndexSelector.ItemIndex := -1;
@@ -33,8 +37,8 @@ begin
   var section := Name;
   if ParentSection > '' then
     section := ParentSection + '\' + section;
-  SomeIndexSelector.ItemIndex := Storage.ReadInteger(section, 'SomeIndex', -1);
-  SomeTextEdit.Text := Storage.ReadString(section, 'SomeText', '');
+  SomeIndexSelector.ItemIndex := Storage.ReadInteger(section, cSomeIndex, -1);
+  SomeTextEdit.Text := Storage.ReadString(section, cSomeText, '');
 end;
 
 procedure TDemoFrame.SaveToStorage(Storage: TCustomIniFile; const ParentSection: string = '');
@@ -42,8 +46,8 @@ begin
   var section := Name;
   if ParentSection > '' then
     section := ParentSection + '\' + section;
-  Storage.WriteInteger(section, 'SomeIndex', SomeIndexSelector.ItemIndex);
-  Storage.WriteString(section, 'SomeText', SomeTextEdit.Text);
+  Storage.WriteInteger(section, cSomeIndex, SomeIndexSelector.ItemIndex);
+  Storage.WriteString(section, cSomeText, SomeTextEdit.Text);
 end;
 
 procedure TDemoFrame.UpdateTitle;

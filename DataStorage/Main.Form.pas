@@ -57,11 +57,23 @@ uses
   System.SysUtils, System.IOUtils, System.Rtti,
   Vcl.Consts;
 
+{$R *.dfm}
+
+const
+  cIniExtension = '.ini';
+
+resourcestring
+  SIniDescription = 'INI files';
+
+const
+  cSomeBoolean = 'SomeBoolean';
+  cSomeEnum = 'SomeEnum';
+  cSomeIndex = 'SomeIndex';
+  cSomeText = 'SomeText';
+
 resourcestring
   SLoadSettings = 'Load settings';
   SSaveSettings = 'Save settings';
-
-{$R *.dfm}
 
 type
   TMyEnumHelper = record helper for TMyEnum
@@ -140,7 +152,7 @@ begin
   SaveSettingsDialog.Title := SSaveSettings;
   PrepareFileDialog(LoadSettingsDialog);
   PrepareFileDialog(SaveSettingsDialog);
-  SettingsFileName := TPath.ChangeExtension(Application.ExeName, '.ini');
+  SettingsFileName := TPath.ChangeExtension(Application.ExeName, cIniExtension);
   InitDefaults;
   LoadFromStorage(SettingsFileName);
   UpdateTitle;
@@ -168,11 +180,11 @@ end;
 
 procedure TDemoMainForm.PrepareFileDialog(ADialog: TCustomFileDialog);
 begin
-  var defaultExt := '.ini';
+  var defaultExt := cIniExtension;
   ADialog.FileTypes.Clear;
 
   var fileType := ADialog.FileTypes.Add;
-  fileType.DisplayName := Format('%s (*%s)', ['INI files', defaultExt]);
+  fileType.DisplayName := Format('%s (*%s)', [SIniDescription, defaultExt]);
   fileType.FileMask := Format('*%s', [defaultExt]);
   ADialog.FileTypeIndex := ADialog.FileTypes.Count;
 
@@ -208,10 +220,10 @@ end;
 procedure TDemoMainForm.LoadFromStorage(Storage: TCustomIniFile);
 begin
   var section := Name;
-  SomeBooleanCheck.Checked := Storage.ReadBool(section, 'SomeBoolean', True);
-  SomeEnumSelector.ItemIndex := TMyEnum.FromString(Storage.ReadString(section, 'SomeEnum', TMyEnum.None.AsString)).AsIndex;
-  SomeIndexSelector.ItemIndex := Storage.ReadInteger(section, 'SomeIndex', 1);
-  SomeTextEdit.Text := Storage.ReadString(section, 'SomeText', 'Hello World');
+  SomeBooleanCheck.Checked := Storage.ReadBool(section, cSomeBoolean, True);
+  SomeEnumSelector.ItemIndex := TMyEnum.FromString(Storage.ReadString(section, cSomeEnum, TMyEnum.None.AsString)).AsIndex;
+  SomeIndexSelector.ItemIndex := Storage.ReadInteger(section, cSomeIndex, 1);
+  SomeTextEdit.Text := Storage.ReadString(section, cSomeText, 'Hello World');
   DemoFrame1.LoadFromStorage(Storage, section);
   DemoFrame2.LoadFromStorage(Storage, section);
 end;
@@ -247,10 +259,10 @@ end;
 procedure TDemoMainForm.SaveToStorage(Storage: TCustomIniFile);
 begin
   var section := Name;
-  Storage.WriteBool(section, 'SomeBoolean', SomeBooleanCheck.Checked);
-  Storage.WriteString(section, 'SomeEnum', TMyEnum.FromIndex(SomeEnumSelector.ItemIndex).AsString);
-  Storage.WriteInteger(section, 'SomeIndex', SomeIndexSelector.ItemIndex);
-  Storage.WriteString(section, 'SomeText', SomeTextEdit.Text);
+  Storage.WriteBool(section, cSomeBoolean, SomeBooleanCheck.Checked);
+  Storage.WriteString(section, cSomeEnum, TMyEnum.FromIndex(SomeEnumSelector.ItemIndex).AsString);
+  Storage.WriteInteger(section, cSomeIndex, SomeIndexSelector.ItemIndex);
+  Storage.WriteString(section, cSomeText, SomeTextEdit.Text);
   DemoFrame1.SaveToStorage(Storage, section);
   DemoFrame2.SaveToStorage(Storage, section);
 end;
