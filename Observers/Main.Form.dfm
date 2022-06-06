@@ -25,8 +25,6 @@ object DemoMainForm: TDemoMainForm
     Width = 185
     Height = 23
     TabOrder = 0
-    OnExit = MyStringEditExit
-    OnKeyPress = MyStringEditKeyPress
   end
   object MyLinesMemo: TMemo
     Left = 32
@@ -34,7 +32,6 @@ object DemoMainForm: TDemoMainForm
     Width = 185
     Height = 148
     TabOrder = 1
-    OnExit = MyLinesMemoExit
   end
   object MySelectedComboBox: TComboBox
     Left = 223
@@ -42,9 +39,6 @@ object DemoMainForm: TDemoMainForm
     Width = 178
     Height = 23
     TabOrder = 2
-    OnChange = MySelectedComboBoxChange
-    OnExit = MySelectedComboBoxExit
-    OnSelect = MySelectedComboBoxSelect
     Items.Strings = (
       'Combo 1'
       'Combo 2'
@@ -65,7 +59,5 @@ object DemoMainForm: TDemoMainForm
       'List 4'
       'List 5')
     TabOrder = 3
-    OnClick = MyListItemListBoxClick
-    OnExit = MyListItemListBoxExit
   end
 end
