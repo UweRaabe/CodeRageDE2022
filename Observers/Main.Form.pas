@@ -53,6 +53,7 @@ begin
   MyListItemListBox.ItemIndex := Data.MyListItemIndex;
 
   { link observers }
+  MyStringEdit.AddValidator(Data.IsMyStringValid);
   MyStringEdit.AddObserver(procedure(AValue: string) begin Data.MyString := AValue end);
   MyLinesMemo.AddObserver(procedure(AValue: TStrings) begin Data.MyLines := AValue end);
   MySelectedComboBox.AddObserver(procedure(AValue: Integer) begin Data.MySelectedIndex := AValue end);
