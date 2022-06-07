@@ -42,12 +42,7 @@ type
     FData: TData;
     procedure SetData(const Value: TData);
   protected
-    procedure MyLinesChanged; override;
-    procedure MyListItemChanged; override;
-    procedure MyListItemIndexChanged; override;
-    procedure MySelectedChanged; override;
-    procedure MySelectedIndexChanged; override;
-    procedure MyStringChanged; override;
+    procedure Changed; override;
   public
     constructor Create(AData: TData);
     property Data: TData read FData write SetData;
@@ -119,40 +114,10 @@ begin
   Data := AData;
 end;
 
-procedure TObservableDataWrapper.MyLinesChanged;
+procedure TObservableDataWrapper.Changed;
 begin
-  Data.MyLines := MyLines;
   inherited;
-end;
-
-procedure TObservableDataWrapper.MyListItemChanged;
-begin
-  Data.MyListItem := MyListItem;
-  inherited;
-end;
-
-procedure TObservableDataWrapper.MyListItemIndexChanged;
-begin
-  Data.MyListItemIndex := MyListItemIndex;
-  inherited;
-end;
-
-procedure TObservableDataWrapper.MySelectedChanged;
-begin
-  Data.MySelected := MySelected;
-  inherited;
-end;
-
-procedure TObservableDataWrapper.MySelectedIndexChanged;
-begin
-  Data.MySelectedIndex := MySelectedIndex;
-  inherited;
-end;
-
-procedure TObservableDataWrapper.MyStringChanged;
-begin
-  Data.MyString := MyString;
-  inherited;
+  FData.Assign(Self);
 end;
 
 procedure TObservableDataWrapper.SetData(const Value: TData);
