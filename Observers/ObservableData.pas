@@ -9,6 +9,16 @@ uses
 
 type
   TObservableData = class(TData)
+  public const
+    { string representation of TData property names.
+      I am eagerly waiting for the implementation of the top most voted feature request in QP:
+      RSP-13290 "NameOf(T) compiler (magic) function" }
+    cMyLines = 'MyLines';
+    cMyListItem = 'MyListItem';
+    cMyListItemIndex = 'MyListItemIndex';
+    cMySelected = 'MySelected';
+    cMySelectedIndex = 'MySelectedIndex';
+    cMyString = 'MyString';
   private
     FObservers: TValueObservers<TData>;
   protected
@@ -53,37 +63,37 @@ end;
 procedure TObservableData.MyLinesChanged;
 begin
   inherited;
-  Observers.ValueChanged('MyLines');
+  Observers.ValueChanged(cMyLines);
 end;
 
 procedure TObservableData.MyListItemChanged;
 begin
   inherited;
-  Observers.ValueChanged('MyListItem');
+  Observers.ValueChanged(cMyListItem);
 end;
 
 procedure TObservableData.MyListItemIndexChanged;
 begin
   inherited;
-  Observers.ValueChanged('MyListItemIndex');
+  Observers.ValueChanged(cMyListItemIndex);
 end;
 
 procedure TObservableData.MySelectedChanged;
 begin
   inherited;
-  Observers.ValueChanged('MySelected');
+  Observers.ValueChanged(cMySelected);
 end;
 
 procedure TObservableData.MySelectedIndexChanged;
 begin
   inherited;
-  Observers.ValueChanged('MySelectedIndex');
+  Observers.ValueChanged(cMySelectedIndex);
 end;
 
 procedure TObservableData.MyStringChanged;
 begin
   inherited;
-  Observers.ValueChanged('MyString');
+  Observers.ValueChanged(cMyString);
 end;
 
 end.
