@@ -270,9 +270,15 @@ end;
 
 procedure TValueObservers<T>.ValueChanged(ID: Integer);
 begin
-  var list := GetMultiCastObserver(ID);
-  for var I := 0 to list.Count - 1 do
-    ValueChanged(list[I]);
+  if not IsObserving(ID) then Exit;
+
+  try
+    var list := GetMultiCastObserver(ID);
+    for var I := 0 to list.Count - 1 do
+      ValueChanged(list[I]);
+  except
+    on EObserverException do ;
+  end;
 end;
 
 procedure TValueObservers<T>.ValueChanged(const Key: string);
