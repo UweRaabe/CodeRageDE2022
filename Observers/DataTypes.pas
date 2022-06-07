@@ -14,24 +14,25 @@ type
     FMySelected: string;
     FMySelectedIndex: Integer;
     FMyString: string;
-    function GetMyLines: TStrings;
-    procedure MyLinesChanged;
-    procedure MyListItemChanged;
-    procedure MyListItemIndexChanged;
-    procedure MySelectedChanged;
-    procedure MySelectedIndexChanged;
-    procedure MyStringChanged;
     procedure SetMyLines(Value: TStrings);
     procedure SetMyListItem(const Value: string);
     procedure SetMyListItemIndex(const Value: Integer);
     procedure SetMySelected(const Value: string);
     procedure SetMySelectedIndex(const Value: Integer);
     procedure SetMyString(const Value: string);
+  protected
+    procedure MyLinesChanged; virtual;
+    procedure MyListItemChanged; virtual;
+    procedure MyListItemIndexChanged; virtual;
+    procedure MySelectedChanged; virtual;
+    procedure MySelectedIndexChanged; virtual;
+    procedure MyStringChanged; virtual;
   public
     constructor Create;
     destructor Destroy; override;
     function IsMyStringValid(AValue: string): Boolean;
-    property MyLines: TStrings read GetMyLines write SetMyLines;
+    function IsMyStringValidNoMsg(AValue: string): Boolean;
+    property MyLines: TStrings read FMyLines write SetMyLines;
     property MyListItem: string read FMyListItem write SetMyListItem;
     property MyListItemIndex: Integer read FMyListItemIndex write SetMyListItemIndex;
     property MySelected: string read FMySelected write SetMySelected;
@@ -48,8 +49,13 @@ uses
 constructor TData.Create;
 begin
   inherited;
-  FMyListItemIndex := -1;
+  FMyLines := TStringList.Create;
+
+  FMyLines.AddStrings(['Hello', 'World']);
+  FMyListItemIndex := 2;
   FMySelectedIndex := -1;
+  FMySelected := 'Hurz';
+  FMyString := 'Hello World';
 end;
 
 destructor TData.Destroy;
@@ -58,19 +64,16 @@ begin
   inherited Destroy;
 end;
 
-function TData.GetMyLines: TStrings;
-begin
-  if FMyLines = nil then begin
-    FMyLines := TStringList.Create;
-  end;
-  Result := FMyLines;
-end;
-
 function TData.IsMyStringValid(AValue: string): Boolean;
 begin
-  Result := AValue.IsEmpty or AValue.StartsWith('Hello');
+  Result := IsMyStringValidNoMsg(AValue);
   if not Result then
     TMessageDlg.Error(nil, 'Validation Error', 'MyString has to start with "Hello"!');
+end;
+
+function TData.IsMyStringValidNoMsg(AValue: string): Boolean;
+begin
+  Result := AValue.IsEmpty or AValue.StartsWith('Hello');
 end;
 
 procedure TData.MyLinesChanged;
@@ -90,7 +93,7 @@ end;
 
 procedure TData.MySelectedChanged;
 begin
-  TLog.Send('MySelected changed to: %s', [MySelected])
+  TLog.Send('MySelected changed to: %s', [MySelected]);
 end;
 
 procedure TData.MySelectedIndexChanged;
