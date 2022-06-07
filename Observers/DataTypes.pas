@@ -21,6 +21,7 @@ type
     procedure SetMySelectedIndex(const Value: Integer);
     procedure SetMyString(const Value: string);
   protected
+    procedure Changed; virtual;
     procedure MyLinesChanged; virtual;
     procedure MyListItemChanged; virtual;
     procedure MyListItemIndexChanged; virtual;
@@ -75,6 +76,10 @@ begin
   FMyString := Source.FMyString;
 end;
 
+procedure TData.Changed;
+begin
+end;
+
 function TData.IsMyStringValid(AValue: string): Boolean;
 begin
   Result := IsMyStringValidNoMsg(AValue);
@@ -90,31 +95,37 @@ end;
 procedure TData.MyLinesChanged;
 begin
   TLog.Send('MyLines changed to: %s', [MyLines.CommaText]);
+  Changed;
 end;
 
 procedure TData.MyListItemChanged;
 begin
   TLog.Send('MyListItem changed to: %s', [MyListItem]);
+  Changed;
 end;
 
 procedure TData.MyListItemIndexChanged;
 begin
   TLog.Send('MyListItemIndex changed to: %d', [FMyListItemIndex]);
+  Changed;
 end;
 
 procedure TData.MySelectedChanged;
 begin
   TLog.Send('MySelected changed to: %s', [MySelected]);
+  Changed;
 end;
 
 procedure TData.MySelectedIndexChanged;
 begin
   TLog.Send('MySelectedIndex changed to: %d', [FMySelectedIndex]);
+  Changed;
 end;
 
 procedure TData.MyStringChanged;
 begin
   TLog.Send('MyString changed to: %s', [MyString]);
+  Changed;
 end;
 
 procedure TData.SetMyLines(Value: TStrings);
