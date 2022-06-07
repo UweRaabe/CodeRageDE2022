@@ -10,7 +10,7 @@ uses
 type
   TObservableData = class(TData)
   private
-    FObservers: TValueObservers<TObservableData>;
+    FObservers: TValueObservers<TData>;
   protected
     procedure MyLinesChanged; override;
     procedure MyListItemChanged; override;
@@ -21,8 +21,9 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    procedure AddObserver<T>(const APropName: string; AOnValueChanged: TProc<T>);
-    property Observers: TValueObservers<TObservableData> read FObservers;
+    procedure AddObserver<T>(const APropName: string; AOnValueChanged: TProc<T>); overload;
+    procedure AddObserver<T>(const APropName: string; AOnValueChanged: TProc<TData,T>); overload;
+    property Observers: TValueObservers<TData> read FObservers;
   end;
 
 implementation
@@ -30,7 +31,7 @@ implementation
 constructor TObservableData.Create;
 begin
   inherited;
-  FObservers := TValueObservers<TObservableData>.Create(Self);
+  FObservers := TValueObservers<TData>.Create(Self);
 end;
 
 destructor TObservableData.Destroy;
@@ -40,6 +41,11 @@ begin
 end;
 
 procedure TObservableData.AddObserver<T>(const APropName: string; AOnValueChanged: TProc<T>);
+begin
+  Observers.AddObserver<T>(APropName, AOnValueChanged);
+end;
+
+procedure TObservableData.AddObserver<T>(const APropName: string; AOnValueChanged: TProc<TData,T>);
 begin
   Observers.AddObserver<T>(APropName, AOnValueChanged);
 end;

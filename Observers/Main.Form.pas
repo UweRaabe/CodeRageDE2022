@@ -74,6 +74,13 @@ begin
   tmp.AddObserver<string>('MySelected', procedure(AValue: string) begin MySelectedComboBox.Text := AValue end);
   tmp.AddObserver<Integer>('MyListItemIndex', procedure(AValue: Integer) begin MyListItemListBox.ItemIndex := AValue end);
 
+  tmp.AddObserver<string>('MySelected',
+    procedure(AData: TData; AValue: string)
+    begin
+      if (AData.MySelectedIndex < 0) and AData.IsMyStringValidNoMsg(AValue) then
+        AData.MyString := AValue
+    end);
+
   Result := tmp;
 end;
 
