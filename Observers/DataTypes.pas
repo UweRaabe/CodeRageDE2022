@@ -30,6 +30,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
+    procedure Assign(Source: TData); virtual;
     function IsMyStringValid(AValue: string): Boolean;
     function IsMyStringValidNoMsg(AValue: string): Boolean;
     property MyLines: TStrings read FMyLines write SetMyLines;
@@ -62,6 +63,16 @@ destructor TData.Destroy;
 begin
   FMyLines.Free;
   inherited Destroy;
+end;
+
+procedure TData.Assign(Source: TData);
+begin
+  FMyLines.Assign(Source.FMyLines);
+  FMyListItem := Source.FMyListItem;
+  FMyListItemIndex := Source.FMyListItemIndex;
+  FMySelected := Source.FMySelected;
+  FMySelectedIndex := Source.FMySelectedIndex;
+  FMyString := Source.FMyString;
 end;
 
 function TData.IsMyStringValid(AValue: string): Boolean;
