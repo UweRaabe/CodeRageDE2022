@@ -18,6 +18,8 @@ type
     FData: TData;
     FLogHandlerId: Integer;
     procedure DoLogMessage(const AMessage: string);
+  strict protected
+    function CreateData: TData;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -33,7 +35,8 @@ implementation
 
 uses
   System.SysUtils,
-  Cmon.Logging, Cmon.Observers.Vcl;
+  Cmon.Logging, Cmon.Observers.Vcl,
+  ObservableData;
 
 constructor TDemoMainForm.Create(AOwner: TComponent);
 begin
@@ -43,14 +46,7 @@ begin
   LogMemo.Clear;
   FLogHandlerId := TLog.Subscribe(DoLogMessage);
 
-  FData := TData.Create;
-
-  { load initial data }
-  MyStringEdit.Text := Data.MyString;
-  MyLinesMemo.Lines := Data.MyLines;
-  MySelectedComboBox.Text := Data.MySelected;
-  MySelectedComboBox.ItemIndex := Data.MySelectedIndex;
-  MyListItemListBox.ItemIndex := Data.MyListItemIndex;
+  FData := CreateData;
 
   { link observers }
   MyStringEdit.AddValidator(Data.IsMyStringValid);
@@ -67,6 +63,18 @@ begin
   TLog.Unsubscribe(FLogHandlerId);
   FData.Free;
   inherited Destroy;
+end;
+
+function TDemoMainForm.CreateData: TData;
+begin
+  var tmp := TObservableData.Create;
+  tmp.AddObserver<string>('MyString', procedure(AValue: string) begin MyStringEdit.Text := AValue end);
+  tmp.AddObserver<TStrings>('MyLines', procedure(AValue: TStrings) begin MyLinesMemo.Lines := AValue end);
+  tmp.AddObserver<Integer>('MySelectedIndex', procedure(AValue: Integer) begin MySelectedComboBox.ItemIndex := AValue end);
+  tmp.AddObserver<string>('MySelected', procedure(AValue: string) begin MySelectedComboBox.Text := AValue end);
+  tmp.AddObserver<Integer>('MyListItemIndex', procedure(AValue: Integer) begin MyListItemListBox.ItemIndex := AValue end);
+
+  Result := tmp;
 end;
 
 procedure TDemoMainForm.DoLogMessage(const AMessage: string);
