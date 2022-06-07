@@ -36,6 +36,23 @@ type
     property Observers: TValueObservers<TData> read FObservers;
   end;
 
+type
+  TObservableDataWrapper = class(TObservableData)
+  private
+    FData: TData;
+    procedure SetData(const Value: TData);
+  protected
+    procedure MyLinesChanged; override;
+    procedure MyListItemChanged; override;
+    procedure MyListItemIndexChanged; override;
+    procedure MySelectedChanged; override;
+    procedure MySelectedIndexChanged; override;
+    procedure MyStringChanged; override;
+  public
+    constructor Create(AData: TData);
+    property Data: TData read FData write SetData;
+  end;
+
 implementation
 
 constructor TObservableData.Create;
@@ -94,6 +111,56 @@ procedure TObservableData.MyStringChanged;
 begin
   inherited;
   Observers.ValueChanged(cMyString);
+end;
+
+constructor TObservableDataWrapper.Create(AData: TData);
+begin
+  inherited Create;
+  Data := AData;
+end;
+
+procedure TObservableDataWrapper.MyLinesChanged;
+begin
+  Data.MyLines := MyLines;
+  inherited;
+end;
+
+procedure TObservableDataWrapper.MyListItemChanged;
+begin
+  Data.MyListItem := MyListItem;
+  inherited;
+end;
+
+procedure TObservableDataWrapper.MyListItemIndexChanged;
+begin
+  Data.MyListItemIndex := MyListItemIndex;
+  inherited;
+end;
+
+procedure TObservableDataWrapper.MySelectedChanged;
+begin
+  Data.MySelected := MySelected;
+  inherited;
+end;
+
+procedure TObservableDataWrapper.MySelectedIndexChanged;
+begin
+  Data.MySelectedIndex := MySelectedIndex;
+  inherited;
+end;
+
+procedure TObservableDataWrapper.MyStringChanged;
+begin
+  Data.MyString := MyString;
+  inherited;
+end;
+
+procedure TObservableDataWrapper.SetData(const Value: TData);
+begin
+  if (FData <> Value) and (Self <> Value) then begin
+    FData := Value;
+    Assign(FData);
+  end;
 end;
 
 end.
