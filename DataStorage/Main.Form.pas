@@ -5,7 +5,7 @@ interface
 uses
   System.Classes, System.IniFiles,
   Vcl.Forms, Vcl.Controls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Mask, Vcl.Dialogs,
-  Common.Form,
+  Common.Frame, Common.Form,
   Main.Frame;
 
 type
@@ -33,20 +33,16 @@ type
     procedure RestoreDefaultsButtonClick(Sender: TObject);
     procedure SaveSettingsButtonClick(Sender: TObject);
   private
-    FSettingsFileName: string;
     procedure PrepareFileDialog(ADialog: TCustomFileDialog);
   protected
-    procedure InitDefaults;
-    procedure LoadFromStorage(const AFileName: string); overload;
-    procedure LoadFromStorage(Storage: TCustomIniFile); overload;
+    procedure InternalInitDefaults; override;
+    procedure InternalLoadFromStorage(Storage: TCustomIniFile); overload; override;
+    procedure InternalSaveToStorage(Storage: TCustomIniFile); overload; override;
     procedure LoadSettings;
     procedure RestoreDefaults;
     procedure SaveSettings;
-    procedure SaveToStorage(const AFileName: string); overload;
-    procedure SaveToStorage(Storage: TCustomIniFile); overload;
   public
     procedure UpdateTitle;
-    property SettingsFileName: string read FSettingsFileName write FSettingsFileName;
   end;
 
 var
@@ -56,7 +52,8 @@ implementation
 
 uses
   System.SysUtils, System.IOUtils, System.Rtti,
-  Vcl.Consts;
+  Vcl.Consts,
+  Cmon.Utilities;
 
 {$R *.dfm}
 
@@ -155,10 +152,10 @@ begin
   PrepareFileDialog(SaveSettingsDialog);
   SettingsFileName := TPath.ChangeExtension(Application.ExeName, cIniExtension);
   InitDefaults;
-  LoadFromStorage(SettingsFileName);
+  LoadFromStorage;
   UpdateTitle;
-  DemoFrame1.UpdateTitle;
-  DemoFrame2.UpdateTitle;
+  for var frame in ComponentsOf<TDemoFrame> do
+    frame.UpdateTitle;
 end;
 
 procedure TDemoMainForm.LoadSettingsButtonClick(Sender: TObject);
@@ -198,35 +195,33 @@ begin
   ADialog.FileName := SettingsFileName;
 end;
 
-procedure TDemoMainForm.InitDefaults;
+procedure TDemoMainForm.InternalInitDefaults;
 begin
+  inherited;
   SomeBooleanCheck.Checked := True;
   SomeEnumSelector.ItemIndex := TMyEnum.None.AsIndex;
   SomeIndexSelector.ItemIndex := 1;
   SomeTextEdit.Text := 'Hello World';
-  DemoFrame1.InitDefaults;
-  DemoFrame2.InitDefaults;
 end;
 
-procedure TDemoMainForm.LoadFromStorage(const AFileName: string);
+procedure TDemoMainForm.InternalLoadFromStorage(Storage: TCustomIniFile);
 begin
-  var ini := TMemInifile.Create(AFileName);
-  try
-    LoadFromStorage(ini);
-  finally
-    ini.Free;
-  end;
-end;
-
-procedure TDemoMainForm.LoadFromStorage(Storage: TCustomIniFile);
-begin
-  var section := Name;
+  inherited;
+  var section := GetStorageKey;
   SomeBooleanCheck.Checked := Storage.ReadBool(section, cSomeBoolean, True);
   SomeEnumSelector.ItemIndex := TMyEnum.FromString(Storage.ReadString(section, cSomeEnum, TMyEnum.None.AsString)).AsIndex;
   SomeIndexSelector.ItemIndex := Storage.ReadInteger(section, cSomeIndex, 1);
   SomeTextEdit.Text := Storage.ReadString(section, cSomeText, 'Hello World');
-  DemoFrame1.LoadFromStorage(Storage, section);
-  DemoFrame2.LoadFromStorage(Storage, section);
+end;
+
+procedure TDemoMainForm.InternalSaveToStorage(Storage: TCustomIniFile);
+begin
+  inherited;
+  var section := GetStorageKey;
+  Storage.WriteBool(section, cSomeBoolean, SomeBooleanCheck.Checked);
+  Storage.WriteString(section, cSomeEnum, TMyEnum.FromIndex(SomeEnumSelector.ItemIndex).AsString);
+  Storage.WriteInteger(section, cSomeIndex, SomeIndexSelector.ItemIndex);
+  Storage.WriteString(section, cSomeText, SomeTextEdit.Text);
 end;
 
 procedure TDemoMainForm.LoadSettings;
@@ -244,28 +239,6 @@ procedure TDemoMainForm.SaveSettings;
 begin
   if SaveSettingsDialog.Execute then
     SaveToStorage(SaveSettingsDialog.FileName);
-end;
-
-procedure TDemoMainForm.SaveToStorage(const AFileName: string);
-begin
-  var ini := TMemInifile.Create(AFileName);
-  try
-    SaveToStorage(ini);
-    ini.UpdateFile;
-  finally
-    ini.Free;
-  end;
-end;
-
-procedure TDemoMainForm.SaveToStorage(Storage: TCustomIniFile);
-begin
-  var section := Name;
-  Storage.WriteBool(section, cSomeBoolean, SomeBooleanCheck.Checked);
-  Storage.WriteString(section, cSomeEnum, TMyEnum.FromIndex(SomeEnumSelector.ItemIndex).AsString);
-  Storage.WriteInteger(section, cSomeIndex, SomeIndexSelector.ItemIndex);
-  Storage.WriteString(section, cSomeText, SomeTextEdit.Text);
-  DemoFrame1.SaveToStorage(Storage, section);
-  DemoFrame2.SaveToStorage(Storage, section);
 end;
 
 procedure TDemoMainForm.UpdateTitle;

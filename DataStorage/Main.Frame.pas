@@ -12,10 +12,11 @@ type
     SomeTextEdit: TLabeledEdit;
     SomeIndexSelector: TRadioGroup;
     TitleLabel: TLabel;
+  protected
+    procedure InternalInitDefaults; override;
+    procedure InternalLoadFromStorage(Storage: TCustomIniFile; const ParentSection: string = ''); override;
+    procedure InternalSaveToStorage(Storage: TCustomIniFile; const ParentSection: string = ''); override;
   public
-    procedure InitDefaults;
-    procedure LoadFromStorage(Storage: TCustomIniFile; const ParentSection: string = ''); overload;
-    procedure SaveToStorage(Storage: TCustomIniFile; const ParentSection: string = ''); overload;
     procedure UpdateTitle;
   end;
 
@@ -27,26 +28,25 @@ const
   cSomeIndex = 'SomeIndex';
   cSomeText = 'SomeText';
 
-procedure TDemoFrame.InitDefaults;
+procedure TDemoFrame.InternalInitDefaults;
 begin
+  inherited;
   SomeIndexSelector.ItemIndex := -1;
   SomeTextEdit.Text := '';
 end;
 
-procedure TDemoFrame.LoadFromStorage(Storage: TCustomIniFile; const ParentSection: string = '');
+procedure TDemoFrame.InternalLoadFromStorage(Storage: TCustomIniFile; const ParentSection: string = '');
 begin
-  var section := Name;
-  if ParentSection > '' then
-    section := ParentSection + '\' + section;
+  inherited;
+  var section := GetStorageKey(ParentSection);
   SomeIndexSelector.ItemIndex := Storage.ReadInteger(section, cSomeIndex, -1);
   SomeTextEdit.Text := Storage.ReadString(section, cSomeText, '');
 end;
 
-procedure TDemoFrame.SaveToStorage(Storage: TCustomIniFile; const ParentSection: string = '');
+procedure TDemoFrame.InternalSaveToStorage(Storage: TCustomIniFile; const ParentSection: string = '');
 begin
-  var section := Name;
-  if ParentSection > '' then
-    section := ParentSection + '\' + section;
+  inherited;
+  var section := GetStorageKey(ParentSection);
   Storage.WriteInteger(section, cSomeIndex, SomeIndexSelector.ItemIndex);
   Storage.WriteString(section, cSomeText, SomeTextEdit.Text);
 end;
