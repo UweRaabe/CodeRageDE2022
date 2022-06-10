@@ -119,6 +119,19 @@ object DemoMainForm: TDemoMainForm
     TabOrder = 8
     OnClick = RestoreDefaultsButtonClick
   end
+  object MainDataTree: TTreeView
+    Left = 648
+    Top = 256
+    Width = 153
+    Height = 169
+    AutoExpand = True
+    Indent = 19
+    TabOrder = 9
+    OnDblClick = MainDataTreeDblClick
+    OnEdited = MainDataTreeEdited
+    OnEditing = MainDataTreeEditing
+    OnKeyDown = MainDataTreeKeyDown
+  end
   object LoadSettingsDialog: TFileOpenDialog
     FavoriteLinks = <>
     FileTypes = <>

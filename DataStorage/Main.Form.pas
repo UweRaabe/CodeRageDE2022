@@ -4,7 +4,7 @@ interface
 
 uses
   System.Classes, System.IniFiles,
-  Vcl.Forms, Vcl.Controls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Mask, Vcl.Dialogs,
+  Vcl.Forms, Vcl.Controls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Mask, Vcl.Dialogs, Vcl.ComCtrls,
   Cmon.DataStorage,
   Common.Frame, Common.Form,
   Main.Frame;
@@ -34,9 +34,14 @@ type
     LoadSettingsDialog: TFileOpenDialog;
     SaveSettingsDialog: TFileSaveDialog;
     RestoreDefaultsButton: TButton;
+    MainDataTree: TTreeView;
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure LoadSettingsButtonClick(Sender: TObject);
+    procedure MainDataTreeDblClick(Sender: TObject);
+    procedure MainDataTreeEdited(Sender: TObject; Node: TTreeNode; var S: string);
+    procedure MainDataTreeEditing(Sender: TObject; Node: TTreeNode; var AllowEdit: Boolean);
+    procedure MainDataTreeKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure RestoreDefaultsButtonClick(Sender: TObject);
     procedure SaveSettingsButtonClick(Sender: TObject);
   strict private
@@ -49,6 +54,7 @@ type
     function GetSomeEnum: TMyEnum;
     function GetSomeIndex: Integer;
     function GetSomeText: string;
+    procedure LoadMainData;
     procedure PrepareFileDialog(ADialog: TCustomFileDialog);
     procedure SetSomeBoolean(const Value: Boolean);
     procedure SetSomeEnum(const Value: TMyEnum);
@@ -59,6 +65,9 @@ type
     procedure RestoreDefaults;
     procedure SaveSettings;
   public
+    procedure InitDefaults(Storage: TDataStorage); overload; override;
+    procedure LoadFromStorage(Storage: TDataStorage); overload; override;
+    procedure SaveToStorage(Storage: TDataStorage); overload; override;
     procedure UpdateTitle;
     class property SettingsFileExtension: string read FSettingsFileExtension write FSettingsFileExtension;
     class property SettingsFileName: string read GetSettingsFileName write FSettingsFileName;
@@ -78,9 +87,10 @@ var
 implementation
 
 uses
-  System.SysUtils, System.IOUtils, System.Rtti,
+  System.SysUtils, System.IOUtils, System.Rtti, System.UITypes,
   Vcl.Consts,
-  Cmon.Utilities;
+  Cmon.Utilities,
+  Main.Data.Types;
 
 {$R *.dfm}
 
@@ -225,6 +235,35 @@ begin
   Result := SomeTextEdit.Text;
 end;
 
+procedure TDemoMainForm.InitDefaults(Storage: TDataStorage);
+begin
+  inherited;
+  Storage.InitDefaults(MainData);
+  LoadMainData;
+end;
+
+procedure TDemoMainForm.LoadFromStorage(Storage: TDataStorage);
+begin
+  inherited;
+  Storage.LoadFromStorage(MainData);
+  LoadMainData;
+end;
+
+procedure TDemoMainForm.LoadMainData;
+begin
+  MainDataTree.Items.Clear;
+
+  var mainNode := MainDataTree.Items.AddChild(nil, 'MainData');
+  MainDataTree.Items.AddChild(mainNode, MainData.SomeInteger.ToString);
+  MainDataTree.Items.AddChild(mainNode, MainData.SomeString);
+
+  var subNode := MainDataTree.Items.AddChild(mainNode, 'SubData');
+  MainDataTree.Items.AddChild(subNode, MainData.SubData.SomeInteger.ToString);
+  MainDataTree.Items.AddChild(subNode, MainData.SubData.SomeString);
+
+  MainDataTree.FullExpand;
+end;
+
 procedure TDemoMainForm.PrepareFileDialog(ADialog: TCustomFileDialog);
 begin
   var defaultExt := SettingsFileExtension;
@@ -277,6 +316,44 @@ begin
     LoadFromStorage(LoadSettingsDialog.FileName);
 end;
 
+procedure TDemoMainForm.MainDataTreeDblClick(Sender: TObject);
+begin
+  inherited;
+  if MainDataTree.Selected <> nil then
+    MainDataTree.Selected.EditText;
+end;
+
+procedure TDemoMainForm.MainDataTreeEdited(Sender: TObject; Node: TTreeNode; var S: string);
+begin
+  inherited;
+  case Node.Level of
+    1: case Node.Index of
+         0: MainData.SomeInteger := S.ToInteger;
+         1: MainData.SomeString := S;
+       end;
+    2: case Node.Index of
+         0: MainData.SubData.SomeInteger := S.ToInteger;
+         1: MainData.SubData.SomeString := S;
+       end;
+  end;
+end;
+
+procedure TDemoMainForm.MainDataTreeEditing(Sender: TObject; Node: TTreeNode; var AllowEdit: Boolean);
+begin
+  inherited;
+  AllowEdit := not Node.HasChildren;
+end;
+
+procedure TDemoMainForm.MainDataTreeKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  inherited;
+  if ((Key = vkF2) or (Key=vkReturn)) and (Shift = []) then begin
+    if MainDataTree.Selected <> nil then
+      MainDataTree.Selected.EditText;
+    Key := 0;
+  end;
+end;
+
 procedure TDemoMainForm.RestoreDefaults;
 begin
   InitDefaults;
@@ -286,6 +363,12 @@ procedure TDemoMainForm.SaveSettings;
 begin
   if SaveSettingsDialog.Execute then
     SaveToStorage(SaveSettingsDialog.FileName);
+end;
+
+procedure TDemoMainForm.SaveToStorage(Storage: TDataStorage);
+begin
+  inherited;
+  Storage.SaveToStorage(MainData);
 end;
 
 procedure TDemoMainForm.UpdateTitle;
