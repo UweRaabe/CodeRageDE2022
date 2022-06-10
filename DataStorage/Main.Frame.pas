@@ -19,22 +19,17 @@ type
     procedure SetSomeIndex(const Value: Integer);
     procedure SetSomeText(const Value: string);
   protected
-    procedure InternalInitDefaults(Storage: TDataStorage); override;
-    procedure InternalLoadFromStorage(Storage: TDataStorage); override;
-    procedure InternalSaveToStorage(Storage: TDataStorage); override;
   public
     procedure UpdateTitle;
+    [Stored, Default(-1)]
     property SomeIndex: Integer read GetSomeIndex write SetSomeIndex;
+    [Stored, Default('')]
     property SomeText: string read GetSomeText write SetSomeText;
   end;
 
 implementation
 
 {$R *.dfm}
-
-const
-  cSomeIndex = 'SomeIndex';
-  cSomeText = 'SomeText';
 
 function TDemoFrame.GetSomeIndex: Integer;
 begin
@@ -54,27 +49,6 @@ end;
 procedure TDemoFrame.SetSomeText(const Value: string);
 begin
   SomeTextEdit.Text := Value;
-end;
-
-procedure TDemoFrame.InternalInitDefaults(Storage: TDataStorage);
-begin
-  inherited;
-  SomeIndex := -1;
-  SomeText := '';
-end;
-
-procedure TDemoFrame.InternalLoadFromStorage(Storage: TDataStorage);
-begin
-  inherited;
-  SomeIndex := Storage.ReadInteger(cSomeIndex, -1);
-  SomeText := Storage.ReadString(cSomeText, '');
-end;
-
-procedure TDemoFrame.InternalSaveToStorage(Storage: TDataStorage);
-begin
-  inherited;
-  Storage.WriteInteger(cSomeIndex, SomeIndex);
-  Storage.WriteString(cSomeText, SomeText);
 end;
 
 procedure TDemoFrame.UpdateTitle;

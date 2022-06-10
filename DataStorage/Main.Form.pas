@@ -50,8 +50,6 @@ type
     procedure SetSomeText(const Value: string);
   protected
     procedure InternalInitDefaults(Storage: TDataStorage); override;
-    procedure InternalLoadFromStorage(Storage: TDataStorage); overload; override;
-    procedure InternalSaveToStorage(Storage: TDataStorage); overload; override;
     procedure LoadSettings;
     procedure RestoreDefaults;
     procedure SaveSettings;
@@ -59,9 +57,13 @@ type
     procedure UpdateTitle;
     class property SettingsFileExtension: string read FSettingsFileExtension write FSettingsFileExtension;
     class property SettingsFileName: string read GetSettingsFileName write FSettingsFileName;
+    [Stored, Default(True)]
     property SomeBoolean: Boolean read GetSomeBoolean write SetSomeBoolean;
+    [Stored]
     property SomeEnum: TMyEnum read GetSomeEnum write SetSomeEnum;
+    [Stored, Default(1)]
     property SomeIndex: Integer read GetSomeIndex write SetSomeIndex;
+    [Stored, Default('Hello World')]
     property SomeText: string read GetSomeText write SetSomeText;
   end;
 
@@ -76,12 +78,6 @@ uses
   Cmon.Utilities;
 
 {$R *.dfm}
-
-const
-  cSomeBoolean = 'SomeBoolean';
-  cSomeEnum = 'SomeEnum';
-  cSomeIndex = 'SomeIndex';
-  cSomeText = 'SomeText';
 
 resourcestring
   SLoadSettings = 'Load settings';
@@ -268,28 +264,7 @@ end;
 procedure TDemoMainForm.InternalInitDefaults(Storage: TDataStorage);
 begin
   inherited;
-  SomeBoolean := True;
   SomeEnum := TMyEnum.None;
-  SomeIndex := 1;
-  SomeText := 'Hello World';
-end;
-
-procedure TDemoMainForm.InternalLoadFromStorage(Storage: TDataStorage);
-begin
-  inherited;
-  SomeBoolean := Storage.ReadBoolean(cSomeBoolean, True);
-  SomeEnum := TMyEnum.FromString(Storage.ReadString(cSomeEnum, TMyEnum.None.AsString));
-  SomeIndex := Storage.ReadInteger(cSomeIndex, 1);
-  SomeText := Storage.ReadString(cSomeText, 'Hello World');
-end;
-
-procedure TDemoMainForm.InternalSaveToStorage(Storage: TDataStorage);
-begin
-  inherited;
-  Storage.WriteBoolean(cSomeBoolean, SomeBoolean);
-  Storage.WriteString(cSomeEnum, SomeEnum.AsString);
-  Storage.WriteInteger(cSomeIndex, SomeIndex);
-  Storage.WriteString(cSomeText, SomeText);
 end;
 
 procedure TDemoMainForm.LoadSettings;
