@@ -4,7 +4,8 @@ interface
 
 uses
   System.Classes, System.IniFiles,
-  Vcl.Forms, Vcl.Controls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Mask;
+  Vcl.Forms, Vcl.Controls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Mask,
+  Common.Frame;
 
 type
   TDemoFrame = class(TFrame)

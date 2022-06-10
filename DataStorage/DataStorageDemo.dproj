@@ -86,6 +86,8 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <DCCReference Include="Common.Frame.pas"/>
+        <DCCReference Include="Common.Form.pas"/>
         <DCCReference Include="Main.Frame.pas">
             <Form>DemoFrame</Form>
             <FormType>dfm</FormType>
@@ -123,7 +125,7 @@
             </Platforms>
             <MMX>
                 <UsesClauseFormatter AutoFormat="1">
-                    <GroupNames>WinApi;System.Win;System;Data;Vcl</GroupNames>
+                    <GroupNames>WinApi;System.Win;System;Data;Vcl;Common</GroupNames>
                 </UsesClauseFormatter>
             </MMX>
         </BorlandProject>
