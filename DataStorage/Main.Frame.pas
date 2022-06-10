@@ -5,7 +5,8 @@ interface
 uses
   System.Classes,
   Vcl.Forms, Vcl.Controls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Mask,
-  Common.Frame, Common.DataStorage;
+  Cmon.DataStorage,
+  Common.Frame;
 
 type
   TDemoFrame = class(TFrame)
@@ -18,7 +19,7 @@ type
     procedure SetSomeIndex(const Value: Integer);
     procedure SetSomeText(const Value: string);
   protected
-    procedure InternalInitDefaults; override;
+    procedure InternalInitDefaults(Storage: TDataStorage); override;
     procedure InternalLoadFromStorage(Storage: TDataStorage); override;
     procedure InternalSaveToStorage(Storage: TDataStorage); override;
   public
@@ -55,7 +56,7 @@ begin
   SomeTextEdit.Text := Value;
 end;
 
-procedure TDemoFrame.InternalInitDefaults;
+procedure TDemoFrame.InternalInitDefaults(Storage: TDataStorage);
 begin
   inherited;
   SomeIndex := -1;

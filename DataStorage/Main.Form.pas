@@ -5,7 +5,8 @@ interface
 uses
   System.Classes, System.IniFiles,
   Vcl.Forms, Vcl.Controls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Mask, Vcl.Dialogs,
-  Common.DataStorage, Common.Frame, Common.Form,
+  Cmon.DataStorage,
+  Common.Frame, Common.Form,
   Main.Frame;
 
 type
@@ -32,7 +33,12 @@ type
     procedure LoadSettingsButtonClick(Sender: TObject);
     procedure RestoreDefaultsButtonClick(Sender: TObject);
     procedure SaveSettingsButtonClick(Sender: TObject);
+  strict private
+  class var
+    FSettingsFileExtension: string;
+    FSettingsFileName: string;
   private
+    class function GetSettingsFileName: string; static;
     function GetSomeBoolean: Boolean;
     function GetSomeEnum: TMyEnum;
     function GetSomeIndex: Integer;
@@ -43,7 +49,7 @@ type
     procedure SetSomeIndex(const Value: Integer);
     procedure SetSomeText(const Value: string);
   protected
-    procedure InternalInitDefaults; override;
+    procedure InternalInitDefaults(Storage: TDataStorage); override;
     procedure InternalLoadFromStorage(Storage: TDataStorage); overload; override;
     procedure InternalSaveToStorage(Storage: TDataStorage); overload; override;
     procedure LoadSettings;
@@ -51,6 +57,8 @@ type
     procedure SaveSettings;
   public
     procedure UpdateTitle;
+    class property SettingsFileExtension: string read FSettingsFileExtension write FSettingsFileExtension;
+    class property SettingsFileName: string read GetSettingsFileName write FSettingsFileName;
     property SomeBoolean: Boolean read GetSomeBoolean write SetSomeBoolean;
     property SomeEnum: TMyEnum read GetSomeEnum write SetSomeEnum;
     property SomeIndex: Integer read GetSomeIndex write SetSomeIndex;
@@ -170,6 +178,16 @@ begin
     frame.UpdateTitle;
 end;
 
+class function TDemoMainForm.GetSettingsFileName: string;
+begin
+  if FSettingsFileName.IsEmpty then
+    Result := TPath.ChangeExtension(TUtilities.GetExeName, SettingsFileExtension)
+  else if TDataStorage.IsSupportedTargetExtension(TPath.GetExtension(FSettingsFileName)) then
+    Result := FSettingsFileName
+  else
+    Result := TPath.ChangeExtension(FSettingsFileName, SettingsFileExtension);
+end;
+
 procedure TDemoMainForm.LoadSettingsButtonClick(Sender: TObject);
 begin
   inherited;
@@ -247,7 +265,7 @@ begin
   SomeTextEdit.Text := Value;
 end;
 
-procedure TDemoMainForm.InternalInitDefaults;
+procedure TDemoMainForm.InternalInitDefaults(Storage: TDataStorage);
 begin
   inherited;
   SomeBoolean := True;
