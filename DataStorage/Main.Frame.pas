@@ -19,8 +19,8 @@ type
     procedure SetSomeText(const Value: string);
   protected
     procedure InternalInitDefaults; override;
-    procedure InternalLoadFromStorage(Storage: TDataStorage; const ParentSection: string = ''); override;
-    procedure InternalSaveToStorage(Storage: TDataStorage; const ParentSection: string = ''); override;
+    procedure InternalLoadFromStorage(Storage: TDataStorage); override;
+    procedure InternalSaveToStorage(Storage: TDataStorage); override;
   public
     procedure UpdateTitle;
     property SomeIndex: Integer read GetSomeIndex write SetSomeIndex;
@@ -62,20 +62,18 @@ begin
   SomeText := '';
 end;
 
-procedure TDemoFrame.InternalLoadFromStorage(Storage: TDataStorage; const ParentSection: string = '');
+procedure TDemoFrame.InternalLoadFromStorage(Storage: TDataStorage);
 begin
   inherited;
-  var section := GetStorageKey(ParentSection);
-  SomeIndex := Storage.ReadInteger(section, cSomeIndex, -1);
-  SomeText := Storage.ReadString(section, cSomeText, '');
+  SomeIndex := Storage.ReadInteger(cSomeIndex, -1);
+  SomeText := Storage.ReadString(cSomeText, '');
 end;
 
-procedure TDemoFrame.InternalSaveToStorage(Storage: TDataStorage; const ParentSection: string = '');
+procedure TDemoFrame.InternalSaveToStorage(Storage: TDataStorage);
 begin
   inherited;
-  var section := GetStorageKey(ParentSection);
-  Storage.WriteInteger(section, cSomeIndex, SomeIndex);
-  Storage.WriteString(section, cSomeText, SomeText);
+  Storage.WriteInteger(cSomeIndex, SomeIndex);
+  Storage.WriteString(cSomeText, SomeText);
 end;
 
 procedure TDemoFrame.UpdateTitle;

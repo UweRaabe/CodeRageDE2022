@@ -259,21 +259,19 @@ end;
 procedure TDemoMainForm.InternalLoadFromStorage(Storage: TDataStorage);
 begin
   inherited;
-  var section := GetStorageKey;
-  SomeBoolean := Storage.ReadBool(section, cSomeBoolean, True);
-  SomeEnum := TMyEnum.FromString(Storage.ReadString(section, cSomeEnum, TMyEnum.None.AsString));
-  SomeIndex := Storage.ReadInteger(section, cSomeIndex, 1);
-  SomeText := Storage.ReadString(section, cSomeText, 'Hello World');
+  SomeBoolean := Storage.ReadBoolean(cSomeBoolean, True);
+  SomeEnum := TMyEnum.FromString(Storage.ReadString(cSomeEnum, TMyEnum.None.AsString));
+  SomeIndex := Storage.ReadInteger(cSomeIndex, 1);
+  SomeText := Storage.ReadString(cSomeText, 'Hello World');
 end;
 
 procedure TDemoMainForm.InternalSaveToStorage(Storage: TDataStorage);
 begin
   inherited;
-  var section := GetStorageKey;
-  Storage.WriteBool(section, cSomeBoolean, SomeBoolean);
-  Storage.WriteString(section, cSomeEnum, SomeEnum.AsString);
-  Storage.WriteInteger(section, cSomeIndex, SomeIndex);
-  Storage.WriteString(section, cSomeText, SomeText);
+  Storage.WriteBoolean(cSomeBoolean, SomeBoolean);
+  Storage.WriteString(cSomeEnum, SomeEnum.AsString);
+  Storage.WriteInteger(cSomeIndex, SomeIndex);
+  Storage.WriteString(cSomeText, SomeText);
 end;
 
 procedure TDemoMainForm.LoadSettings;

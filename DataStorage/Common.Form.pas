@@ -11,7 +11,7 @@ type
   private
     FSettingsFileName: string;
   protected
-    function GetStorageKey: string; virtual;
+    function GetStorageKey(Storage: TDataStorage): string; virtual;
     procedure InternalInitDefaults; virtual;
     procedure InternalLoadFromStorage(Storage: TDataStorage); virtual;
     procedure InternalSaveToStorage(Storage: TDataStorage); virtual;
@@ -36,7 +36,7 @@ uses
   Cmon.Utilities,
   Common.Frame;
 
-function TCommonForm.GetStorageKey: string;
+function TCommonForm.GetStorageKey(Storage: TDataStorage): string;
 begin
   Result := Name;
 end;
@@ -67,20 +67,25 @@ end;
 
 procedure TCommonForm.LoadFromStorage(const AFileName: string);
 begin
-  var ini := TMemInifile.Create(AFileName);
+  var storage := TDataStorage.Create(AFileName);
   try
-    LoadFromStorage(ini);
+    LoadFromStorage(storage);
   finally
-    ini.Free;
+    storage.Free;
   end;
 end;
 
 procedure TCommonForm.LoadFromStorage(Storage: TDataStorage);
 begin
-  InternalLoadFromStorage(Storage);
-  var section := GetStorageKey;
-  for var frame in ComponentsOf<TCommonFrame> do
-    frame.LoadFromStorage(Storage, section);
+  Storage.PushStorageKey;
+  try
+    Storage.StorageKey := GetStorageKey(Storage);
+    InternalLoadFromStorage(Storage);
+    for var frame in ComponentsOf<TCommonFrame> do
+      frame.LoadFromStorage(Storage);
+  finally
+    Storage.PopStorageKey;
+  end;
 end;
 
 procedure TCommonForm.SaveToStorage;
@@ -90,21 +95,25 @@ end;
 
 procedure TCommonForm.SaveToStorage(const AFileName: string);
 begin
-  var ini := TMemInifile.Create(AFileName);
+  var storage := TDataStorage.Create(AFileName);
   try
-    SaveToStorage(ini);
-    ini.UpdateFile;
+    SaveToStorage(storage);
   finally
-    ini.Free;
+    storage.Free;
   end;
 end;
 
 procedure TCommonForm.SaveToStorage(Storage: TDataStorage);
 begin
-  InternalSaveToStorage(Storage);
-  var section := GetStorageKey;
-  for var frame in ComponentsOf<TCommonFrame> do
-    frame.SaveToStorage(Storage, section);
+  Storage.PushStorageKey;
+  try
+    Storage.StorageKey := GetStorageKey(Storage);
+    InternalSaveToStorage(Storage);
+    for var frame in ComponentsOf<TCommonFrame> do
+      frame.SaveToStorage(Storage);
+  finally
+    Storage.PopStorageKey;
+  end;
 end;
 
 end.

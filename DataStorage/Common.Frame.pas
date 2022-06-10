@@ -9,14 +9,14 @@ uses
 type
   TCommonFrame = class(TFrame)
   protected
-    function GetStorageKey(const ParentSection: string = ''): string; virtual;
+    function GetStorageKey(Storage: TDataStorage): string; virtual;
     procedure InternalInitDefaults; virtual;
-    procedure InternalLoadFromStorage(Storage: TDataStorage; const ParentSection: string = ''); virtual;
-    procedure InternalSaveToStorage(Storage: TDataStorage; const ParentSection: string = ''); virtual;
+    procedure InternalLoadFromStorage(Storage: TDataStorage); virtual;
+    procedure InternalSaveToStorage(Storage: TDataStorage); virtual;
   public
     procedure InitDefaults; virtual;
-    procedure LoadFromStorage(Storage: TDataStorage; const ParentSection: string = ''); virtual;
-    procedure SaveToStorage(Storage: TDataStorage; const ParentSection: string = ''); virtual;
+    procedure LoadFromStorage(Storage: TDataStorage); virtual;
+    procedure SaveToStorage(Storage: TDataStorage); virtual;
   end;
   
 type
@@ -27,11 +27,9 @@ implementation
 uses
   Cmon.Utilities;
 
-function TCommonFrame.GetStorageKey(const ParentSection: string = ''): string;
+function TCommonFrame.GetStorageKey(Storage: TDataStorage): string;
 begin
-  Result := Name;
-  if ParentSection > '' then
-    Result := ParentSection + '\' + Result;
+  Result := Storage.MakeStorageSubKey(Name);
 end;
 
 procedure TCommonFrame.InitDefaults;
@@ -45,28 +43,38 @@ procedure TCommonFrame.InternalInitDefaults;
 begin
 end;
 
-procedure TCommonFrame.InternalLoadFromStorage(Storage: TDataStorage; const ParentSection: string = '');
+procedure TCommonFrame.InternalLoadFromStorage(Storage: TDataStorage);
 begin
 end;
 
-procedure TCommonFrame.InternalSaveToStorage(Storage: TDataStorage; const ParentSection: string = '');
+procedure TCommonFrame.InternalSaveToStorage(Storage: TDataStorage);
 begin
 end;
 
-procedure TCommonFrame.LoadFromStorage(Storage: TDataStorage; const ParentSection: string);
+procedure TCommonFrame.LoadFromStorage(Storage: TDataStorage);
 begin
-  InternalLoadFromStorage(Storage, ParentSection);
-  var section := GetStorageKey(ParentSection);
-  for var frame in ComponentsOf<TCommonFrame> do
-    frame.LoadFromStorage(Storage, section);
+  Storage.PushStorageKey;
+  try
+    Storage.StorageKey := GetStorageKey(Storage);
+    InternalLoadFromStorage(Storage);
+    for var frame in ComponentsOf<TCommonFrame> do
+      frame.LoadFromStorage(Storage);
+  finally
+    Storage.PopStorageKey;
+  end;
 end;
 
-procedure TCommonFrame.SaveToStorage(Storage: TDataStorage; const ParentSection: string);
+procedure TCommonFrame.SaveToStorage(Storage: TDataStorage);
 begin
-  InternalSaveToStorage(Storage, ParentSection);
-  var section := GetStorageKey(ParentSection);
-  for var frame in ComponentsOf<TCommonFrame> do
-    frame.SaveToStorage(Storage, section);
+  Storage.PushStorageKey;
+  try
+    Storage.StorageKey := GetStorageKey(Storage);
+    InternalSaveToStorage(Storage);
+    for var frame in ComponentsOf<TCommonFrame> do
+      frame.SaveToStorage(Storage);
+  finally
+    Storage.PopStorageKey;
+  end;
 end;
 
 end.
