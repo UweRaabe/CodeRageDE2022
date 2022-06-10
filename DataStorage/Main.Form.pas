@@ -15,6 +15,12 @@ type
 {$SCOPEDENUMS OFF}
 
 type
+  DefaultMyEnumAttribute = class(DefaultAttribute)
+  public
+    constructor Create(AValue: TMyEnum); overload;
+  end;
+
+type
   TDemoMainForm = class(TForm)
     SomeTextEdit: TLabeledEdit;
     SomeIndexSelector: TRadioGroup;
@@ -49,7 +55,6 @@ type
     procedure SetSomeIndex(const Value: Integer);
     procedure SetSomeText(const Value: string);
   protected
-    procedure InternalInitDefaults(Storage: TDataStorage); override;
     procedure LoadSettings;
     procedure RestoreDefaults;
     procedure SaveSettings;
@@ -59,7 +64,7 @@ type
     class property SettingsFileName: string read GetSettingsFileName write FSettingsFileName;
     [Stored, Default(True)]
     property SomeBoolean: Boolean read GetSomeBoolean write SetSomeBoolean;
-    [Stored]
+    [Stored, DefaultMyEnum(TMyEnum.none)]
     property SomeEnum: TMyEnum read GetSomeEnum write SetSomeEnum;
     [Stored, Default(1)]
     property SomeIndex: Integer read GetSomeIndex write SetSomeIndex;
@@ -82,6 +87,11 @@ uses
 resourcestring
   SLoadSettings = 'Load settings';
   SSaveSettings = 'Save settings';
+
+constructor DefaultMyEnumAttribute.Create(AValue: TMyEnum);
+begin
+  inherited Create(TValue.From(AValue));
+end;
 
 type
   TMyEnumHelper = record helper for TMyEnum
@@ -259,12 +269,6 @@ end;
 procedure TDemoMainForm.SetSomeText(const Value: string);
 begin
   SomeTextEdit.Text := Value;
-end;
-
-procedure TDemoMainForm.InternalInitDefaults(Storage: TDataStorage);
-begin
-  inherited;
-  SomeEnum := TMyEnum.None;
 end;
 
 procedure TDemoMainForm.LoadSettings;
