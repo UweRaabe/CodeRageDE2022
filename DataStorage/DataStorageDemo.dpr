@@ -4,6 +4,7 @@ uses
   Vcl.Forms,
   Cmon.DataStorage.Target,
   Cmon.DataStorage.Inifile,
+  Cmon.DataStorage.JSON,
   Common.Frame in 'Common.Frame.pas',
   Common.Form in 'Common.Form.pas',
   Main.Frame in 'Main.Frame.pas' {DemoFrame: TFrame},
@@ -16,7 +17,7 @@ begin
   { This sets the extension (and thus the handler) which is used for automatic load and Save of storage data }
   TCustomStorageTarget.DefaultFileExtension := TIniStorageTarget.FileExtension;
   { This sets the default extension for the settings file used for manual Load and Save of storage data in DemoMainForm }
-  TDemoMainForm.SettingsFileExtension := TIniStorageTarget.FileExtension;
+  TDemoMainForm.SettingsFileExtension := TJSONStorageTarget.FileExtension;
 end;
 
 begin
