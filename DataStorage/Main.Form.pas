@@ -33,7 +33,15 @@ type
     procedure RestoreDefaultsButtonClick(Sender: TObject);
     procedure SaveSettingsButtonClick(Sender: TObject);
   private
+    function GetSomeBoolean: Boolean;
+    function GetSomeEnum: TMyEnum;
+    function GetSomeIndex: Integer;
+    function GetSomeText: string;
     procedure PrepareFileDialog(ADialog: TCustomFileDialog);
+    procedure SetSomeBoolean(const Value: Boolean);
+    procedure SetSomeEnum(const Value: TMyEnum);
+    procedure SetSomeIndex(const Value: Integer);
+    procedure SetSomeText(const Value: string);
   protected
     procedure InternalInitDefaults; override;
     procedure InternalLoadFromStorage(Storage: TCustomIniFile); overload; override;
@@ -43,6 +51,10 @@ type
     procedure SaveSettings;
   public
     procedure UpdateTitle;
+    property SomeBoolean: Boolean read GetSomeBoolean write SetSomeBoolean;
+    property SomeEnum: TMyEnum read GetSomeEnum write SetSomeEnum;
+    property SomeIndex: Integer read GetSomeIndex write SetSomeIndex;
+    property SomeText: string read GetSomeText write SetSomeText;
   end;
 
 var
@@ -176,6 +188,26 @@ begin
   SaveSettings;
 end;
 
+function TDemoMainForm.GetSomeBoolean: Boolean;
+begin
+  Result := SomeBooleanCheck.Checked;
+end;
+
+function TDemoMainForm.GetSomeEnum: TMyEnum;
+begin
+  Result.AsIndex := SomeEnumSelector.ItemIndex;
+end;
+
+function TDemoMainForm.GetSomeIndex: Integer;
+begin
+  Result := SomeIndexSelector.ItemIndex;
+end;
+
+function TDemoMainForm.GetSomeText: string;
+begin
+  Result := SomeTextEdit.Text;
+end;
+
 procedure TDemoMainForm.PrepareFileDialog(ADialog: TCustomFileDialog);
 begin
   var defaultExt := cIniExtension;
@@ -195,33 +227,53 @@ begin
   ADialog.FileName := SettingsFileName;
 end;
 
+procedure TDemoMainForm.SetSomeBoolean(const Value: Boolean);
+begin
+  SomeBooleanCheck.Checked := Value;
+end;
+
+procedure TDemoMainForm.SetSomeEnum(const Value: TMyEnum);
+begin
+  SomeEnumSelector.ItemIndex := Value.AsIndex;
+end;
+
+procedure TDemoMainForm.SetSomeIndex(const Value: Integer);
+begin
+  SomeIndexSelector.ItemIndex := Value;
+end;
+
+procedure TDemoMainForm.SetSomeText(const Value: string);
+begin
+  SomeTextEdit.Text := Value;
+end;
+
 procedure TDemoMainForm.InternalInitDefaults;
 begin
   inherited;
-  SomeBooleanCheck.Checked := True;
-  SomeEnumSelector.ItemIndex := TMyEnum.None.AsIndex;
-  SomeIndexSelector.ItemIndex := 1;
-  SomeTextEdit.Text := 'Hello World';
+  SomeBoolean := True;
+  SomeEnum := TMyEnum.None;
+  SomeIndex := 1;
+  SomeText := 'Hello World';
 end;
 
 procedure TDemoMainForm.InternalLoadFromStorage(Storage: TCustomIniFile);
 begin
   inherited;
   var section := GetStorageKey;
-  SomeBooleanCheck.Checked := Storage.ReadBool(section, cSomeBoolean, True);
-  SomeEnumSelector.ItemIndex := TMyEnum.FromString(Storage.ReadString(section, cSomeEnum, TMyEnum.None.AsString)).AsIndex;
-  SomeIndexSelector.ItemIndex := Storage.ReadInteger(section, cSomeIndex, 1);
-  SomeTextEdit.Text := Storage.ReadString(section, cSomeText, 'Hello World');
+  SomeBoolean := Storage.ReadBool(section, cSomeBoolean, True);
+  SomeEnum := TMyEnum.FromString(Storage.ReadString(section, cSomeEnum, TMyEnum.None.AsString));
+  SomeIndex := Storage.ReadInteger(section, cSomeIndex, 1);
+  SomeText := Storage.ReadString(section, cSomeText, 'Hello World');
 end;
 
 procedure TDemoMainForm.InternalSaveToStorage(Storage: TCustomIniFile);
 begin
   inherited;
   var section := GetStorageKey;
-  Storage.WriteBool(section, cSomeBoolean, SomeBooleanCheck.Checked);
-  Storage.WriteString(section, cSomeEnum, TMyEnum.FromIndex(SomeEnumSelector.ItemIndex).AsString);
-  Storage.WriteInteger(section, cSomeIndex, SomeIndexSelector.ItemIndex);
-  Storage.WriteString(section, cSomeText, SomeTextEdit.Text);
+  Storage.WriteBool(section, cSomeBoolean, SomeBoolean);
+  Storage.WriteString(section, cSomeEnum, SomeEnum.AsString);
+  Storage.WriteInteger(section, cSomeIndex, SomeIndex);
+  Storage.WriteString(section, cSomeText, SomeText);
 end;
 
 procedure TDemoMainForm.LoadSettings;
