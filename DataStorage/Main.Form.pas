@@ -5,7 +5,7 @@ interface
 uses
   System.Classes, System.IniFiles,
   Vcl.Forms, Vcl.Controls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Mask, Vcl.Dialogs,
-  Common.Frame, Common.Form,
+  Common.DataStorage, Common.Frame, Common.Form,
   Main.Frame;
 
 type
@@ -44,8 +44,8 @@ type
     procedure SetSomeText(const Value: string);
   protected
     procedure InternalInitDefaults; override;
-    procedure InternalLoadFromStorage(Storage: TCustomIniFile); overload; override;
-    procedure InternalSaveToStorage(Storage: TCustomIniFile); overload; override;
+    procedure InternalLoadFromStorage(Storage: TDataStorage); overload; override;
+    procedure InternalSaveToStorage(Storage: TDataStorage); overload; override;
     procedure LoadSettings;
     procedure RestoreDefaults;
     procedure SaveSettings;
@@ -256,7 +256,7 @@ begin
   SomeText := 'Hello World';
 end;
 
-procedure TDemoMainForm.InternalLoadFromStorage(Storage: TCustomIniFile);
+procedure TDemoMainForm.InternalLoadFromStorage(Storage: TDataStorage);
 begin
   inherited;
   var section := GetStorageKey;
@@ -266,7 +266,7 @@ begin
   SomeText := Storage.ReadString(section, cSomeText, 'Hello World');
 end;
 
-procedure TDemoMainForm.InternalSaveToStorage(Storage: TCustomIniFile);
+procedure TDemoMainForm.InternalSaveToStorage(Storage: TDataStorage);
 begin
   inherited;
   var section := GetStorageKey;

@@ -3,8 +3,8 @@ unit Common.Form;
 interface
 
 uses
-  System.IniFiles,
-  Vcl.Forms;
+  Vcl.Forms,
+  Common.DataStorage;
 
 type
   TCommonForm = class(TForm)
@@ -13,12 +13,12 @@ type
   protected
     function GetStorageKey: string; virtual;
     procedure InternalInitDefaults; virtual;
-    procedure InternalLoadFromStorage(Storage: TCustomIniFile); virtual;
-    procedure InternalSaveToStorage(Storage: TCustomIniFile); virtual;
+    procedure InternalLoadFromStorage(Storage: TDataStorage); virtual;
+    procedure InternalSaveToStorage(Storage: TDataStorage); virtual;
     procedure LoadFromStorage(const AFileName: string); overload; virtual;
-    procedure LoadFromStorage(Storage: TCustomIniFile); overload; virtual;
+    procedure LoadFromStorage(Storage: TDataStorage); overload; virtual;
     procedure SaveToStorage(const AFileName: string); overload; virtual;
-    procedure SaveToStorage(Storage: TCustomIniFile); overload; virtual;
+    procedure SaveToStorage(Storage: TDataStorage); overload; virtual;
   public
     procedure InitDefaults; virtual;
     procedure LoadFromStorage; overload; virtual;
@@ -32,7 +32,7 @@ type
 implementation
 
 uses
-  System.IOUtils,
+  System.IOUtils, System.IniFiles,
   Cmon.Utilities,
   Common.Frame;
 
@@ -52,11 +52,11 @@ procedure TCommonForm.InternalInitDefaults;
 begin
 end;
 
-procedure TCommonForm.InternalLoadFromStorage(Storage: TCustomIniFile);
+procedure TCommonForm.InternalLoadFromStorage(Storage: TDataStorage);
 begin
 end;
 
-procedure TCommonForm.InternalSaveToStorage(Storage: TCustomIniFile);
+procedure TCommonForm.InternalSaveToStorage(Storage: TDataStorage);
 begin
 end;
 
@@ -75,7 +75,7 @@ begin
   end;
 end;
 
-procedure TCommonForm.LoadFromStorage(Storage: TCustomIniFile);
+procedure TCommonForm.LoadFromStorage(Storage: TDataStorage);
 begin
   InternalLoadFromStorage(Storage);
   var section := GetStorageKey;
@@ -99,7 +99,7 @@ begin
   end;
 end;
 
-procedure TCommonForm.SaveToStorage(Storage: TCustomIniFile);
+procedure TCommonForm.SaveToStorage(Storage: TDataStorage);
 begin
   InternalSaveToStorage(Storage);
   var section := GetStorageKey;

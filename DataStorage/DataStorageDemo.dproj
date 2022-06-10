@@ -87,6 +87,7 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <DCCReference Include="Common.DataStorage.pas"/>
         <DCCReference Include="Common.Frame.pas"/>
         <DCCReference Include="Common.Form.pas"/>
         <DCCReference Include="Main.Frame.pas">

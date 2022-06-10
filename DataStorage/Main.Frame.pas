@@ -3,9 +3,9 @@ unit Main.Frame;
 interface
 
 uses
-  System.Classes, System.IniFiles,
+  System.Classes,
   Vcl.Forms, Vcl.Controls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Mask,
-  Common.Frame;
+  Common.Frame, Common.DataStorage;
 
 type
   TDemoFrame = class(TFrame)
@@ -19,8 +19,8 @@ type
     procedure SetSomeText(const Value: string);
   protected
     procedure InternalInitDefaults; override;
-    procedure InternalLoadFromStorage(Storage: TCustomIniFile; const ParentSection: string = ''); override;
-    procedure InternalSaveToStorage(Storage: TCustomIniFile; const ParentSection: string = ''); override;
+    procedure InternalLoadFromStorage(Storage: TDataStorage; const ParentSection: string = ''); override;
+    procedure InternalSaveToStorage(Storage: TDataStorage; const ParentSection: string = ''); override;
   public
     procedure UpdateTitle;
     property SomeIndex: Integer read GetSomeIndex write SetSomeIndex;
@@ -54,6 +54,7 @@ procedure TDemoFrame.SetSomeText(const Value: string);
 begin
   SomeTextEdit.Text := Value;
 end;
+
 procedure TDemoFrame.InternalInitDefaults;
 begin
   inherited;
@@ -61,7 +62,7 @@ begin
   SomeText := '';
 end;
 
-procedure TDemoFrame.InternalLoadFromStorage(Storage: TCustomIniFile; const ParentSection: string = '');
+procedure TDemoFrame.InternalLoadFromStorage(Storage: TDataStorage; const ParentSection: string = '');
 begin
   inherited;
   var section := GetStorageKey(ParentSection);
@@ -69,7 +70,7 @@ begin
   SomeText := Storage.ReadString(section, cSomeText, '');
 end;
 
-procedure TDemoFrame.InternalSaveToStorage(Storage: TCustomIniFile; const ParentSection: string = '');
+procedure TDemoFrame.InternalSaveToStorage(Storage: TDataStorage; const ParentSection: string = '');
 begin
   inherited;
   var section := GetStorageKey(ParentSection);
