@@ -78,12 +78,6 @@ uses
 {$R *.dfm}
 
 const
-  cIniExtension = '.ini';
-
-resourcestring
-  SIniDescription = 'INI files';
-
-const
   cSomeBoolean = 'SomeBoolean';
   cSomeEnum = 'SomeEnum';
   cSomeIndex = 'SomeIndex';
@@ -170,7 +164,6 @@ begin
   SaveSettingsDialog.Title := SSaveSettings;
   PrepareFileDialog(LoadSettingsDialog);
   PrepareFileDialog(SaveSettingsDialog);
-  SettingsFileName := TPath.ChangeExtension(Application.ExeName, cIniExtension);
   InitDefaults;
   LoadFromStorage;
   UpdateTitle;
@@ -228,19 +221,26 @@ end;
 
 procedure TDemoMainForm.PrepareFileDialog(ADialog: TCustomFileDialog);
 begin
-  var defaultExt := cIniExtension;
-  ADialog.FileTypes.Clear;
+  var defaultExt := SettingsFileExtension;
+  var targets := TStorageTargetDescriptorList.Create;
+  try
+    TDataStorage.ListStorageTargets(targets);
+    ADialog.FileTypes.Clear;
+    for var target in targets do begin
+      var fileType := ADialog.FileTypes.Add;
+      fileType.DisplayName := Format('%s (*%s)', [target.Description, target.FileExtension]);
+      fileType.FileMask := Format('*%s', [target.FileExtension]);
+      if SameText(defaultExt, target.FileExtension) then
+        ADialog.FileTypeIndex := ADialog.FileTypes.Count;
+    end;
 
-  var fileType := ADialog.FileTypes.Add;
-  fileType.DisplayName := Format('%s (*%s)', [SIniDescription, defaultExt]);
-  fileType.FileMask := Format('*%s', [defaultExt]);
-  ADialog.FileTypeIndex := ADialog.FileTypes.Count;
-
-  var arr := SDefaultFilter.Split(['|']);
-  fileType := ADialog.FileTypes.Add;
-  fileType.DisplayName := arr[0];
-  fileType.FileMask := arr[1];
-
+    var arr := SDefaultFilter.Split(['|']);
+    var fileType := ADialog.FileTypes.Add;
+    fileType.DisplayName := arr[0];
+    fileType.FileMask := arr[1];
+  finally
+    targets.Free;
+  end;
   ADialog.DefaultExtension := defaultExt.Substring(1);
   ADialog.FileName := SettingsFileName;
 end;
