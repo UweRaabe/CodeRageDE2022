@@ -134,7 +134,7 @@ end;
 
 procedure TDemoMainForm.FormDestroy(Sender: TObject);
 begin
-  SaveToStorage(SettingsFileName);
+  SaveToStorage;
 end;
 
 procedure TDemoMainForm.FormCreate(Sender: TObject);
