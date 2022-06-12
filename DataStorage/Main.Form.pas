@@ -127,6 +127,11 @@ end;
 
 procedure TDemoMainForm.FormCreate(Sender: TObject);
 begin
+  { set position suitable for screen recording }
+  Left := Screen.Monitors[1].Left + 100;
+  Top := Screen.Monitors[1].Top + 100;
+  Position := poDesigned;
+
   TMyEnum.ListNames(SomeEnumSelector.Items);
   inherited;
   LoadSettingsDialog.Title := SLoadSettings;
